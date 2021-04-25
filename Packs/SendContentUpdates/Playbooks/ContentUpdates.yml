@@ -1,0 +1,195 @@
+id: ContentUpdates
+inputs: []
+name: ContentUpdates
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 763d60ba-64d3-48fe-8381-0c0673caecb1
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 763d60ba-64d3-48fe-8381-0c0673caecb1
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      bucket_name:
+        simple: shula
+      object_name:
+        simple: content/packs/index.zip
+      saved_file_name: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves object data into a file.
+      id: 4dbab157-b077-442d-8343-83206dfe2f14
+      iscommand: true
+      name: Download Index.zip from marketplace-dist
+      script: '|||gcs-download-file'
+      type: regular
+      version: -1
+    taskid: 4dbab157-b077-442d-8343-83206dfe2f14
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      last_message_time_str:
+        simple: "2021-03-26T17:33:28Z"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Extract the index and gets a list of all new packs since last run
+        into context.
+      id: b48bce64-25e1-46ae-8f90-a28484dea56d
+      iscommand: false
+      name: Build Slack Message From Index
+      script: BuildSlackMessageFromIndex
+      type: regular
+      version: -1
+    taskid: b48bce64-25e1-46ae-8f90-a28484dea56d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Message}
+          operator: isNotEqualString
+          right:
+            value:
+              simple: no new packs
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if slack message is not "no new packs"
+      id: 70ab20d6-4254-45ef-8608-67645759f379
+      iscommand: false
+      name: Check If Message Exists
+      type: condition
+      version: -1
+    taskid: 70ab20d6-4254-45ef-8608-67645759f379
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 530
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocks:
+        simple: ${Message}
+      channel:
+        simple: gfr
+      entry: {}
+      ignoreAddURL: {}
+      message: {}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message to a user, group, or channel.
+      id: 16658bfe-f6a5-4caa-8d1b-fa352e345645
+      iscommand: true
+      name: Send Slack Message
+      script: '|||send-notification'
+      type: regular
+      version: -1
+    taskid: 16658bfe-f6a5-4caa-8d1b-fa352e345645
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Send Content Update to DFIR
